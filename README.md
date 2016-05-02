@@ -1,9 +1,6 @@
 # Square-Maths
 A web application made for a math training game focusing heavily on calculating determinants.
 
-> v1.0.0 will be up for release soon.
+This branch is for the online version of the app.
 
-## Dependencies
-These will be packaged with the release.
-* MathJax
-* RobotoSlab-Regular font
+Visit here: http://jf908.github.io/square-maths

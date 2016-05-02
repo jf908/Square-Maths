@@ -1,0 +1,2 @@
+/*! squaremaths 2016-05-02 */
+window.MathJax={jax:["input/AsciiMath","output/HTML-CSS"],extensions:["asciimath2jax.js"],showMathMenu:!1,"HTML-CSS":{imageFont:null},AuthorInit:function(){MathJax.Hub.Register.StartupHook("End",function(){MathJax.Hub.processSectionDelay=0})}};

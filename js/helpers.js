@@ -1,0 +1,2 @@
+/*! squaremaths 2016-05-02 */
+function rndInt(){return Math.floor(30*Math.random()+0).toString()}function shuffle(a){var b,c,d;for(d=a.length;d;d-=1)b=Math.floor(Math.random()*d),c=a[d-1],a[d-1]=a[b],a[b]=c}var el={show:function(a){document.getElementById(a).classList.remove("hidden")},hide:function(a){document.getElementById(a).classList.add("hidden")},style:function(a,b,c){document.getElementById(a).style[b]=c}};
