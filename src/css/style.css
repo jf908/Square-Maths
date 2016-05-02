@@ -2,7 +2,7 @@
    This is the part where I regret not learning SCSS/Less */
 @font-face {
 	font-family: "Roboto Slab";
-	src: url("fonts/RobotoSlab-Regular.ttf");
+	src: url("../fonts/RobotoSlab-Regular.ttf");
 }
 /*@import url(https://fonts.googleapis.com/css?family=Roboto+Slab);*/
 
@@ -95,9 +95,7 @@ body {
 	position: absolute;
 	top: 10px;
 	left: 10px;
-}
-#timer-border {
-	fill: #5598e7;
+	transform: rotate(-90deg);
 }
 
 td.select {

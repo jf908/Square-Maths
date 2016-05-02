@@ -1,19 +1,12 @@
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Square Maths</title>
-<link rel="stylesheet" type="text/css" href="style.css">
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    jax: ["input/AsciiMath", "output/HTML-CSS"],
-    extensions: ["asciimath2jax.js"],
-    showMathMenu: false,
-	"HTML-CSS": {
-        imageFont: null
-	}
-});
-</script>
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/mathjax-config.js"></script>
 <script type="text/javascript" src="./MathJax.js"></script>
+<!-- <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js"></script> -->
 </head>
 <body>
 <div id="overlay" class="hidden">
@@ -26,7 +19,7 @@ MathJax.Hub.Config({
         </table>
     </div>
     <svg width="250" height="250" viewbox="0 0 250 250" class="timer">
-        <path id="timer-border" transform="translate(125,125)"/>
+        <circle id="timer-border" fill="none" stroke="#ddd" stroke-width="10" stroke-miterlimit="10" cx="125" cy="125" r="90" stroke-dasharray="565.5" />
     </svg>
     <div id="auto-hide">
     	<div id="finish" onClick="changeState('ready')" class="button">Finish</div>
@@ -91,7 +84,7 @@ MathJax.Hub.Config({
             <option value="random">Random</option>
             <option value="custom">Custom</option>
         </select></label>
-        <label><input id="prop-sequence" class="hidden" placeholder="eg. 1,2,3,2,1" type="text" oninput="setProperty('sequence')" onkeypress="valid(event,'numbersandcommas')"></label>
+        <label><input id="prop-sequence" class="hidden" placeholder="eg. 1,2,3,2,1" type="text" oninput="setProperty('sequence')" onkeypress="valid(event,'numbersandcommas')" maxlength="100"></label>
     </form>
     <div class="input-custom hidden">
         <input type="text">
@@ -115,9 +108,9 @@ MathJax.Hub.Config({
     </div>
 </div>
 <a id="download"></a>
-<script type="text/javascript" src="helpers.js"></script>
-<script type="text/javascript" src="matrix.js"></script>
-<script type="text/javascript" src="script.js"></script>
-<script type="text/javascript" src="matrix-calculator.js"></script>
+<script type="text/javascript" src="js/helpers.js"></script>
+<script type="text/javascript" src="js/matrix.js"></script>
+<script type="text/javascript" src="js/script.js"></script>
+<script type="text/javascript" src="js/matrix-calculator.js"></script>
 </body>
 </html>

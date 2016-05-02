@@ -2,6 +2,7 @@
 //the interaction between the script and MathJax
 
 var Matrix = {
+	//Stores each matrix element
 	nodes: [],
 	//Converts a matrix to an AsciiMath formatted 2x2 or 3x3 string
 	convert: function(matrix) {

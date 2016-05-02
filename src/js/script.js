@@ -2,11 +2,6 @@
 //if I was more organised it would be
 //a bit more modular.
 
-//MathJax Setup
-MathJax.Hub.Register.StartupHook("End", function() {
-  MathJax.Hub.processSectionDelay = 0;
-});
-
 //Variables
 var save;
 var selected;
@@ -20,7 +15,6 @@ var width = puzzle.offsetWidth;
 var height = puzzle.offsetHeight;
 var container = document.getElementsByClassName("container")[0];
 var sidebar = document.getElementById("sidebar");
-
 var minitable = document.querySelectorAll(".minitable td");
 
 //Scale values
@@ -28,7 +22,8 @@ var size = Math.min(width, height);
 var scales = size / 500;
 
 //Used for shuffling
-var matNums = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+var defaultMatNums = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+var matNums = [];
 var matIndex = 0;
 
 //Stores matrices table element
@@ -90,11 +85,11 @@ var stateFunctions = {
 	"playing": {
 		enter: function() {
 			el.show("overlay");
-
 			var middleText = document.getElementsByClassName("middleText")[0];
 			middleText.innerHTML = "3";
-			shuffle(matNums);
+            manageMatNums();
 			matrices.style.opacity = 0;
+            timer.reset();
 			setTimeout(function(){middleText.innerHTML="2";}, 1000);
 			setTimeout(function(){middleText.innerHTML="1";}, 2000);
 			setTimeout(function() {
@@ -103,7 +98,6 @@ var stateFunctions = {
 				revolve();
 				rotationInterval = setInterval(revolve, save.props.delay);
 				inRotation = true;
-                timer.angle = 0;
                 timerInterval = setInterval(timer.draw.bind(timer),30);
 			}, 3000);
 		},
@@ -115,6 +109,12 @@ var stateFunctions = {
 				gotoNeutral();
 				inRotation = false;
 			}
+            setTimeout(function() {
+                var nodes = document.querySelectorAll(".matrix.hidden");
+                for (var i = 0; i < nodes.length; i++) {
+                  nodes[i].classList.remove("hidden");
+                }
+            }, 601);
 		}
 	},
 	"finish": {
@@ -168,16 +168,7 @@ function goto(a, b) {
 	matrices.style.transform = "scale(" + 4 * scales + ")";
 }
 
-
-// 	m = [
-// 		[Matrix.create("pi^2", 3, "3pi", "10/pi"), Matrix.create(5, 4, 5, 1, 2, 8, "102/11", 6, 1), Matrix.create("1/27", "-1/27", 0, 9, 4, 1, 25, 11, 3)],
-// 		[Matrix.create(1,1,1,1,1,0,0,1,1), Matrix.create(17, -2, -8, 10, "int_-pi^0 (sinx) dx", 1, -1, 0, -1), Matrix.create("2^8", "2^-4", "8^(4/3)", "2^-7")],
-// 		[Matrix.create("11/32","2^-5",11,6), Matrix.create(2,4,1,2,1,2,10,-3,2), Matrix.create(3, 2, 2, 2)],
-// 	];
-// 	setupMatrix(m);
-
-
-//Button events
+//Save file event
 document.getElementById("save").addEventListener("click", function() {
 	a = document.getElementById("download");
 	var json = JSON.stringify(save),
@@ -187,11 +178,12 @@ document.getElementById("save").addEventListener("click", function() {
     if(document.getElementById("filename").value) {
         a.download = document.getElementById("filename").value + ".json";
     } else {
-        a.download = "matrix.json";
+        a.download = "Matrix.json";
     }
 	a.click();
 	window.URL.revokeObjectURL(url);
 });
+//Load file event
 document.getElementById("open").addEventListener("change", function() {
 	if (typeof window.FileReader !== 'function') {
 	    alert("The file API isn't supported on this browser yet.");
@@ -220,6 +212,7 @@ document.getElementById("open").addEventListener("change", function() {
 		if(obj && obj.type && obj.type=="3x3") {
             document.getElementById("filename").value = e.target.fileName.slice(0,-5);
 			save = obj;
+            loadProperties();
             setupMatrix(save.data);
 			changeState("ready");
             Matrix.updateAll();
@@ -274,7 +267,7 @@ function selectMatrixTypeView(type) {
 		sidebar.getElementsByClassName(type)[0].classList.remove("hidden");
 	}
 }
-
+//When matrix is clicked
 function matrixEditClick() {
 	if(state == "editor") {
 		changeSidebar("input-matrix");
@@ -313,26 +306,47 @@ var setProps = {
     sequenceType: function(d) {
         if(d=="random") {
             el.hide("prop-sequence");
+            document.getElementById("prop-sequence").value = "";
+            setProperty("sequence");
+            document.getElementById("prop-sequence").style.background = "rgba(0,0,0,.2)";
         } else {
             el.show("prop-sequence");
         }
         return d;
     },
     sequence: function(d) {
-        var set = d.split(",");
-        for(var i=0;i<set.length;i++) {
-            if(!set[i] || set[i]<1 || set[i]>9) {
-                document.getElementById("prop-sequence").style.background = "rgba(255,0,0,.1)";
-                return [];
-            }
+        if(validateSequence(d)) {
+            document.getElementById("prop-sequence").style.background = "rgba(0,0,0,.2)";
+            return d;
+        } else {
+            document.getElementById("prop-sequence").style.background = "rgba(255,0,0,.1)";
+            return "";
         }
-        document.getElementById("prop-sequence").style.background = "rgba(0,0,0,.1)";
-        return set;
     }
 };
+//Validates if a sequence will work
+function validateSequence(text) {
+    var set = text.split(",");
+    for(var i=0;i<set.length;i++) {
+        if(!set[i] || set[i]<1 || set[i]>9) {
+            return false;
+        }
+        set[i] = set[i]-1;
+    }
+    return set;
+}
 //Sets a property
 function setProperty(prop) {
 	save.props[prop] = setProps[prop](document.getElementById("prop-"+prop).value);
+}
+//Loads properties
+function loadProperties() {
+    for(var prop in save.props) {
+        if(save.props[prop]) {
+            document.getElementById("prop-"+prop).value = save.props[prop];
+            setProps[prop](save.props[prop]);
+        }
+    }
 }
 
 //Handles window resizes
@@ -348,6 +362,23 @@ function resize() {
 }
 window.onresize = resize;
 
+//Sets the sequence order
+function manageMatNums() {
+    clearMini();
+    if(save.props.sequenceType == "custom") {
+        var validated = validateSequence(save.props.sequence);
+        if(validated) {
+            matNums = validated.slice();
+            matIndex = matNums.length-1;
+        } else {
+            matNums = defaultMatNums.slice();
+            shuffle(matNums);
+        }
+    } else {
+        matNums = defaultMatNums.slice();
+        shuffle(matNums);
+    }
+}
 //Clears the minimap
 function clearMini() {
 	for (var i = 0; i < minitable.length; i++) {
@@ -407,27 +438,18 @@ function valid(evt, rgx) {
     }
 }
 
+//Timer module
 var timer = {
     svg: document.getElementById("timer-border"),
     angle: 0,
+    circum: 565.5,
     draw: function() {
-        this.angle += (save.props.delay/30)/360;
-        this.angle %= 360;
-        var r=(this.angle*Math.PI/180),
-            x=Math.sin(r)*125,
-            y=Math.cos(r)*-125,
-            mid=(this.angle>180)?1:0,
-            anim="M 0 0 v -125 A 125 125 1 " + mid + "1" + x + " " + y + " z";
-        this.svg.setAttribute("d", anim);
+        this.angle += (this.circum * 30)/(save.props.delay);
+        this.angle %= this.circum;
+        this.svg.style.strokeDashoffset = (this.circum-this.angle)+"px";
+    },
+    reset: function() {
+        this.angle = 0;
+        this.svg.style.strokeDashoffset = this.circum+"px";
     }
 };
-
-// Disabled
-// Used for displaying numbers in each matrix
-// td = document.querySelectorAll(".matrices td");
-// for (var i = 0; i < td.length; i++) {
-// 	var node = document.createElement("span");
-// 	node.innerHTML = i + 1;
-// 	node.classList.add("num");
-// 	td[i].appendChild(node);
-// }

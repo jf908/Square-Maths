@@ -25,4 +25,4 @@ var el = {
 	style: function(id, prop, value) {
 		document.getElementById(id).style[prop] = value;
 	}
-}
+};
