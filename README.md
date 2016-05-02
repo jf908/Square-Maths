@@ -3,4 +3,4 @@ A web application made for a math training game focusing heavily on calculating 
 
 This branch is for the online version of the app.
 
-Visit here: http://jf908.github.io/square-maths
+Visit here: http://jf908.github.io/Square-Maths
